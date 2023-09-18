@@ -19,7 +19,6 @@ module.exports.createUser = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   User.findById({ _id: req.params.userId })
-    .orFail(new Error('Пользователь не найеден'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
