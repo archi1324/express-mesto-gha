@@ -19,12 +19,12 @@ module.exports.createUser = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   User.findById({ _id: req.params.userId })
-    .orFail(() => {new Error('Пользователь не найеден')})
+    .orFail(new Error('Пользователь не найеден'))
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Данные id не верны' });
-      } if (err.message === 'NotFound') {
+      } if (err.message === 'Пользователь не найеден') {
         return res.status(404).send({ message: 'Пользователь по данному id не найден' });
       }
       return res.status(500).send({ message: err.message });
