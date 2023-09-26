@@ -15,14 +15,13 @@ module.exports.getUser = (req, res,next) => {
 
 module.exports.createUser = (req, res) => {
   const { email, password, name, about, avatar } = req.body;
-  bcrypt.hash(password, 10).then((hash) => User.create({
+  bcrypt.hash(password, 10)
+  .then((hash) => User.create({
     email, password: hash, name, about, avatar,
   }))
-    .then((user) => {const { _id } = user;
-    return res.status(201).send({
+    .then((user) => res.status(201).send({
       email, name, about, avatar, _id,
-    });
-  })
+  }))
   .catch((err) => {
     if (err.code === 11000) {
       next(new Conflict('Пользователь уже зарегистрирован'));
@@ -59,7 +58,7 @@ module.exports.changeUserInfo = (req, res) => {
     res.send(user);
   })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new BadRequest('Данные переданы неверно'));
       } else {
         next(err);
