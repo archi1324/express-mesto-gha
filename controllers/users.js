@@ -52,10 +52,12 @@ module.exports.getUserById = (req, res) => {
 module.exports.changeUserInfo = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true }) // обработчик then получит на вход обновлённую запись, данные будут валидированы перед изменением
-    .then((user) => {
-      if (user) return res.send({ user });
-      throw new NotFound('Пользователь не найден');
-    })
+  .then((user) => {
+    if (!user) {
+      throw new NotFound('Пользователь с указанным _id не найден');
+    }
+    res.send(user);
+  })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequest('Данные переданы неверно'));
@@ -69,8 +71,10 @@ module.exports.changeUserInfo = (req, res) => {
 module.exports.changeAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, req.body , { new: true, runValidators: true })
   .then((user) => {
-    if (user) return res.send({ user });
-    throw new NotFound('Пользователь не найден');
+    if (!user) {
+      throw new NotFound('Пользователь с указанным _id не найден');
+    }
+    res.send(user);
   })
   .catch((err) => {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
