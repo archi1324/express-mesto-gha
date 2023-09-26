@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const validator = require('validator');
+const authError = require('../errors/Unauthorized(401)');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -13,11 +16,16 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 2,
     maxlength: 30,
+    default: 'Исследователь океана'
   },
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     required: true,
+    validate: {
+      validator: (v) => validator.isURL(v),
+      message: 'Неправильный формат адреса',
+    },
   },
   email: {
     type: String,
@@ -38,21 +46,21 @@ const userSchema = new mongoose.Schema({
   versionKey: false,
 },);
 
-module.exports = mongoose.model('user', userSchema);
-
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new UnauthorizedError('Неверная почта'));
+        return Promise.reject(new authError('Неверная почта'));
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new UnauthorizedError('Неверный пароль'));
+            return Promise.reject(new authError('Неверный пароль'));
           }
           return user;
         });
     });
 };
+
+module.exports = mongoose.model('user', userSchema);
