@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { login, createUser } = require('./controllers/users');
 const helmet = require('helmet');
-const { celebrate, Joi } = require('celebrate');
+const {celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
-
+const {errors}= require('celebrate')
 const { PORT = 3000 } = process.env;
 const app = express();
 app.use(helmet());
@@ -14,6 +14,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use('/users', auth, require('./routes/users'));
+app.use('/cards', auth, require('./routes/cards'));
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -32,10 +35,6 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
-
-app.use('/users', auth, require('./routes/users'));
-app.use('/cards', auth, require('./routes/cards'));
-
 app.use((req, res, next) => {
   req.user = {
     _id: '6508a549bc954daa472fbc63',
@@ -43,6 +42,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(errors());
 app.use((err, req, res, next) => {
   const { status = 500, message } = err;
 
