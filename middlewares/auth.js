@@ -3,8 +3,9 @@ const authError = require('../errors/Unauthorized(401)');
 
 module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
+
   if (!token) {
-    throw new authError('Нужно авторизоваться');
+    throw new authError({message:'Нужно авторизоваться'});
   }
   let payload;
   try {
