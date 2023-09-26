@@ -1,16 +1,16 @@
-const token = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const authError = require('../errors/Unauthorized(401)');
 
 module.exports = (req, res, next) => {
-  const { jwt } = req.cookies;
-  if (!jwt) {
-    return next(new authError('Нет jwt'));
+  const token = req.cookies.jwt;
+  if (!token) {
+    throw new authError('Нужно авторизоваться');
   }
   let payload;
   try {
-    payload = token.verify(jwt, 'super-strong-secret');
+    payload = jwt.verify(token, 'super-strong-secret');
   } catch (err) {
-    return next(new authError('Необходима авторизация'));
+    throw new authError('Необходима авторизация');
   }
   req.user = payload; // записываем пейлоуд
   return next();
