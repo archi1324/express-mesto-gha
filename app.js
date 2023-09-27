@@ -31,16 +31,9 @@ app.post('/signup', celebrate({
     password: Joi.string().required().min(8),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string(),
+    avatar: Joi.string().required().pattern(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/),
   }),
 }), createUser);
-
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6508a549bc954daa472fbc63',
-  };
-  next();
-});
 
 app.use(errors());
 app.use((err, req, res, next) => {

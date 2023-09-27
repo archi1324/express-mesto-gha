@@ -48,7 +48,7 @@ module.exports.getUserById = (req, res) => {
 
 module.exports.changeUserInfo = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true }) // обработчик then получит на вход обновлённую запись, данные будут валидированы перед изменением
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
   .then((user) => {
     if (!user) {
       throw new NotFound('Пользователь с указанным _id не найден');
