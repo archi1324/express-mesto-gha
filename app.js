@@ -14,7 +14,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
@@ -36,16 +36,6 @@ app.post('/signup', celebrate({
 }), createUser);
 
 app.use(errors());
-app.use((err, req, res, next) => {
-  const { status = 500, message } = err;
-
-  res.status(status).send({
-      message: status === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    })
-    .catch(next);
-});
 
 app.use('*', (req, res) => res.status(404).send({ message: 'Страница не найдена.' }));
 

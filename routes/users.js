@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
 const {
-  getUser, getUserById, changeUserInfo, changeAvatar,
+  getUser, getUserLogin,getUserById, changeUserInfo, changeAvatar,
 } = require('../controllers/users');
 
 router.get('/', getUser);
@@ -12,7 +12,7 @@ router.get('/:userId', celebrate({
   params: Joi.object().keys({
     userId: Joi.string().required().length(24),
   }),
-}), getUser);
+}), getUserById);
 
 router.patch('/me', celebrate({
   body: Joi.object().keys({

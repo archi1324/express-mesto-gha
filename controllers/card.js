@@ -28,6 +28,7 @@ module.exports.deleteCard = (req, res,next) => {
       if (!card) {
       throw new NotFound('Карточка по id не найдена');
       }
+     const { owner: cardOwnerId } = card;
      if (cardOwnerId.valueOf() !== req.user._id) {
       throw new Forbidden('Ошибка прав доступа');
       }
@@ -39,14 +40,14 @@ module.exports.deleteCard = (req, res,next) => {
 module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
       req.params.cardId,
-      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+      { $addToSet: { likes: req.user._id } },
       { new: true },
     )
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка с указанным _id не найдена');
       }
-      res.send(card);
+      res.status(201).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
