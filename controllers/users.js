@@ -13,25 +13,25 @@ module.exports.getUser = (req, res,next) => {
     .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
   bcrypt.hash(password, 10)
   .then((hash) => User.create({
     email, password: hash, name, about, avatar,
   }))
-    .then((user) => res.status(201).send(user))
+    .then((user) => {return res.status(201).send(user)})
   .catch((err) => {
     if (err.code === 11000) {
-      next(new Conflict('Пользователь уже зарегистрирован'));
+     return next(new Conflict('Пользователь уже зарегистрирован'));
     } else if (err.name === 'ValidationError') {
-      next(new BadRequest('Данные переданы неверно'));
+     return next(new BadRequest('Данные переданы неверно'));
     } else {
       next(err);
     }
   });
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById({ _id: req.params.userId })
   .then((user) => {
     if (user) return res.status(401).send({ user });
@@ -46,7 +46,7 @@ module.exports.getUserById = (req, res) => {
   });
 };
 
-module.exports.changeUserInfo = (req, res) => {
+module.exports.changeUserInfo = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
   .then((user) => {
@@ -65,7 +65,7 @@ module.exports.changeUserInfo = (req, res) => {
 
 };
 
-module.exports.changeAvatar = (req, res) => {
+module.exports.changeAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body , { new: true, runValidators: true })
   .then((user) => {
     if (!user) {
