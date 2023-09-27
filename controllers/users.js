@@ -19,9 +19,7 @@ module.exports.createUser = (req, res, next) => {
   .then((hash) => User.create({
     email, password: hash, name, about, avatar,
   }))
-    .then((user) => {
-      const { _id } = user;
-      return res.status(201).send({email,name, about, avatar, _id})})
+    .then((user) => {return res.status(201).send(user)})
   .catch((err) => {
     if (err.code === 11000) {
      return next(new Conflict('Пользователь уже зарегистрирован'));
@@ -36,10 +34,8 @@ module.exports.createUser = (req, res, next) => {
 module.exports.getUserById = (req, res, next) => {
   User.findById({ _id: req.params.userId })
   .then((user) => {
-    if (user){
-      throw new NotFound('Пользователь не найден');
-    }
-    res.send(user);
+    if (user) return res.status(401).send({ user });
+    throw new NotFound('Пользователь не найден');
   })
   .catch((err) => {
     if (err.name === 'CastError') {
@@ -50,22 +46,6 @@ module.exports.getUserById = (req, res, next) => {
   });
 };
 
-module.exports.getUserLogin = (req, res, next) => {
-  const { userId } = req.user;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) return res.send({ user });
-      throw new NotFound('Пользователь не найден');
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequest('Данные переданы неверно'));
-      } else {
-        next(err);
-      }
-    });
-};
-
 module.exports.changeUserInfo = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
@@ -73,7 +53,7 @@ module.exports.changeUserInfo = (req, res, next) => {
     if (!user) {
       throw new NotFound('Пользователь с указанным _id не найден');
     }
-    res.status(200).send(user);
+    res.send(user);
   })
     .catch((err) => {
       if (err.name === 'CastError') {
