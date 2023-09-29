@@ -7,7 +7,7 @@ const NotFound = require('../errors/NotFound(404)');
 const Unauthorized = require('../errors/Unauthorized(401)');
 
 
-module.exports.getUser = (req, res,next) => {
+module.exports.getUsers = (req, res,next) => {
   User.find({})
     .then((users) => res.status(200).send({users}))
     .catch(next);
@@ -39,16 +39,23 @@ module.exports.createUser = (req, res, next) => {
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (user) return res.send(user);
-      throw new NotFound('Пользователь не найден');
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequest('Данные переданы неверно'));
-      } else {
-        next(err);
+      if (!user) {
+        throw new NotFound('Пользователь по указанному _id не найден');
       }
-    });
+      res.send(user);
+    })
+    .catch(next);
+};
+
+module.exports.getUser = (req, res, next) => {
+  User.findById(req.params.userId)
+    .then((user) => {
+      if (!user) {
+        throw new NotFound('Пользователь по указанному _id не найден');
+      }
+      res.status(200).send(user);
+    })
+    .catch(next);
 };
 
 module.exports.changeUserInfo = (req, res, next) => {
@@ -61,7 +68,7 @@ module.exports.changeUserInfo = (req, res, next) => {
     res.send(user);
   })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequest('Данные переданы неверно'));
       } else {
         next(err);
@@ -71,7 +78,8 @@ module.exports.changeUserInfo = (req, res, next) => {
 };
 
 module.exports.changeAvatar = (req, res, next) => {
-  User.findByIdAndUpdate(req.user._id, req.body , { new: true, runValidators: true })
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar } , { new: true, runValidators: true })
   .then((user) => {
     if (!user) {
       throw new NotFound('Пользователь с указанным _id не найден');

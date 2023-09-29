@@ -6,17 +6,15 @@ const helmet = require('helmet');
 const {celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
 const {errors}= require('celebrate')
+
 const { PORT = 3000 } = process.env;
 const app = express();
-app.use(helmet());
-
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+app.use(helmet());
+
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -35,19 +33,13 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
-app.use(errors());
-app.use((err, req, res, next) => {
-  const { status = 500, message } = err;
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
 
-  res.status(status).send({
-      message: status === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    })
-    .catch(next);
-});
+app.use(errors());
 
 app.use('*', (req, res) => res.status(404).send({ message: 'Страница не найдена.' }));
+
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
