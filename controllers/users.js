@@ -68,7 +68,7 @@ module.exports.changeUserInfo = (req, res, next) => {
     res.send(user);
   })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         next(new BadRequest('Данные переданы неверно'));
       } else {
         next(err);
