@@ -20,7 +20,10 @@ module.exports.createUser = (req, res, next) => {
     email, password: hash, name, about, avatar,
   }))
     .then((user) =>  res.status(201).send({
-      email, name, about, avatar, _id,
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
     }))
   .catch((err) => {
     if (err.code === 11000) {
@@ -33,24 +36,24 @@ module.exports.createUser = (req, res, next) => {
   });
 };
 
-module.exports.getUserById = (req, res, next) => {
-  User.findById(req.user._id)
+module.exports.getUser = (req, res, next) => {
+  User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFound('Пользователь по указанному _id не найден');
+        throw new NotFoundError('Пользователь по указанному _id не найден');
       }
       res.send(user);
     })
     .catch(next);
 };
 
-module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.userId)
+module.exports.getUserById = (req, res, next) => {
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFound('Пользователь по указанному _id не найден');
+        throw new NotFoundError('Пользователь по указанному _id не найден');
       }
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch(next);
 };
@@ -65,7 +68,7 @@ module.exports.changeUserInfo = (req, res, next) => {
     res.send(user);
   })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new BadRequest('Данные переданы неверно'));
       } else {
         next(err);
@@ -75,8 +78,7 @@ module.exports.changeUserInfo = (req, res, next) => {
 };
 
 module.exports.changeAvatar = (req, res, next) => {
-  const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar } , { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, req.body , { new: true, runValidators: true })
   .then((user) => {
     if (!user) {
       throw new NotFound('Пользователь с указанным _id не найден');
