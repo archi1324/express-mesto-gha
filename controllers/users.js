@@ -19,7 +19,12 @@ module.exports.createUser = (req, res, next) => {
   .then((hash) => User.create({
     email, password: hash, name, about, avatar,
   }))
-    .then((user) => {return res.status(201).send(user)})
+    .then((user) =>  res.status(201).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+    }))
   .catch((err) => {
     if (err.code === 11000) {
      return next(new Conflict('Пользователь уже зарегистрирован'));
@@ -32,18 +37,18 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.getUserById = (req, res, next) => {
-  User.findById({ _id: req.params.userId })
-  .then((user) => {
-    if (user) return res.status(401).send({ user });
-    throw new NotFound('Пользователь не найден');
-  })
-  .catch((err) => {
-    if (err.name === 'CastError') {
-      next(new BadRequest('Данные переданы неверно'));
-    } else {
-      next(err);
-    }
-  });
+  User.findById(req.user._id)
+    .then((user) => {
+      if (user) return res.send(user);
+      throw new NotFound('Пользователь не найден');
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequest('Данные переданы неверно'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.changeUserInfo = (req, res, next) => {
