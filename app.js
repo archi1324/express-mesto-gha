@@ -9,7 +9,7 @@ const {errors}= require('celebrate')
 
 const { PORT = 3000 } = process.env;
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(helmet());
