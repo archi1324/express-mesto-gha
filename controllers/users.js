@@ -20,10 +20,7 @@ module.exports.createUser = (req, res, next) => {
     email, password: hash, name, about, avatar,
   }))
     .then((user) =>  res.status(201).send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      email: user.email,
+      email, name, about, avatar, _id,
     }))
   .catch((err) => {
     if (err.code === 11000) {
@@ -40,7 +37,7 @@ module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному _id не найден');
+        throw new NotFound('Пользователь по указанному _id не найден');
       }
       res.send(user);
     })
@@ -51,9 +48,9 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному _id не найден');
+        throw new NotFound('Пользователь по указанному _id не найден');
       }
-      res.send(user);
+      res.send(req.user);
     })
     .catch(next);
 };
