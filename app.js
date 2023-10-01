@@ -1,22 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { login, createUser } = require('./controllers/users');
 const helmet = require('helmet');
-const {celebrate, Joi } = require('celebrate');
+const {celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
-const {errors}= require('celebrate')
+const { login, createUser } = require('./controllers/users');
+
 const { PORT = 3000 } = process.env;
 const app = express();
 app.use(helmet());
-
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -35,6 +29,12 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
+app.use(auth);
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
+
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+
 app.use(errors());
 app.use((err, req, res, next) => {
   const { status = 500, message } = err;
@@ -44,7 +44,6 @@ app.use((err, req, res, next) => {
         ? 'На сервере произошла ошибка'
         : message,
     })
-    .catch(next);
 });
 
 app.use('*', (req, res) => res.status(404).send({ message: 'Страница не найдена.' }));
