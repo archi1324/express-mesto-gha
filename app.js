@@ -5,8 +5,10 @@ const helmet = require('helmet');
 const {celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
+const NotFound = require('../errors/NotFound(404)');
 
 const { PORT = 3000 } = process.env;
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 const app = express();
 app.use(helmet());
 app.use(bodyParser.json());
@@ -33,9 +35,7 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-
-app.use('*', (req, res) => res.status(404).send({ message: 'Страница не найдена.' }));
+app.use('*', (req, res) => {return next(new NotFound('Маршрут не найден'))});
 
 app.use(errors());
 app.use((err, req, res, next) => {
@@ -46,6 +46,7 @@ app.use((err, req, res, next) => {
         ? 'На сервере произошла ошибка'
         : message,
     })
+    next(err);
 });
 
 app.listen(PORT, () => {
