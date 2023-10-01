@@ -32,7 +32,7 @@ module.exports.deleteCard = (req, res,next) => {
       throw new Forbidden('Ошибка прав доступа');
       }
       return Card.deleteOne(card)
-      .then(() => res.send({ data: 'Карточка удалена' }));
+      .then(() => res.send(card));
     })
     .catch(next);
     }
