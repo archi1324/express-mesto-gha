@@ -5,7 +5,7 @@ const helmet = require('helmet');
 const {celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
-const NotFound = require('../errors/NotFound(404)');
+const NotFound = require('./errors/NotFound(404)');
 
 const { PORT = 3000 } = process.env;
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
