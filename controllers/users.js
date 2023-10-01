@@ -37,8 +37,7 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  const { userId } = req.params;
-  User.findById(userId)
+  User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
         throw new NotFound('Пользователь по указанному _id не найден');
@@ -98,10 +97,10 @@ module.exports.changeAvatar = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
-    .then(({ _id: userId }) => {
-      if (userId) {
+    .then((user) => {
+      if ({ _id: user._id }) {
         const token = jwt.sign(
-          { userId },
+          { _id: user._id },
           'supersecret-key-for-signing',
           { expiresIn: '7d' },
         );
