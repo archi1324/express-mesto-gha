@@ -44,7 +44,7 @@ module.exports.likeCard = (req, res, next) => {
     )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена');
+        throw new NotFound('Карточка с указанным _id не найдена');
       }
       res.send(card);
     })
@@ -67,7 +67,7 @@ module.exports.deleteLike = (req, res, next) => {
     )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена');
+        throw new NotFound('Карточка с указанным _id не найдена');
       }
       res.send(card);
     })
