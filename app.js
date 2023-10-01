@@ -35,7 +35,7 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use('*', (req, res) => {return next(new NotFound('Маршрут не найден'))});
+app.use('*', (req, res) = next(new NotFound('Маршрут не найден')));
 
 app.use(errors());
 app.use((err, req, res, next) => {
