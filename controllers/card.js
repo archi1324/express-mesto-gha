@@ -31,7 +31,7 @@ module.exports.deleteCard = (req, res,next) => {
      if (cardOwnerId.valueOf() !== req.user._id) {
       throw new Forbidden('Ошибка прав доступа');
       }
-      return res.send({ data: deletedCard });
+      return Card.findByIdAndDelete({ _id: req.params.cardId });
     })
     .catch(next);
     }
