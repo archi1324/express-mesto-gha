@@ -15,7 +15,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -33,9 +34,6 @@ app.post('/signup', celebrate({
     avatar: Joi.string().pattern(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/),
   }),
 }), createUser);
-
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
 
 app.use(errors());
 app.use((err, req, res, next) => {

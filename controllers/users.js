@@ -40,7 +40,7 @@ module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFound('Пользователь по указанному _id не найден');
+        throw new NotFoundError('Пользователь по указанному _id не найден');
       }
       res.send(user);
     })
@@ -51,7 +51,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFound('Пользователь по указанному _id не найден');
+        throw new NotFoundError('Пользователь по указанному _id не найден');
       }
       res.send(user);
     })
