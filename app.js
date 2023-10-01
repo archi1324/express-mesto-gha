@@ -6,7 +6,6 @@ const helmet = require('helmet');
 const {celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
 const {errors}= require('celebrate')
-
 const { PORT = 3000 } = process.env;
 const app = express();
 app.use(helmet());
@@ -15,6 +14,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -32,7 +33,7 @@ app.post('/signup', celebrate({
     avatar: Joi.string().pattern(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/),
   }),
 }), createUser);
-// app.use(auth);
+
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 

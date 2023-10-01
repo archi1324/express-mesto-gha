@@ -1,11 +1,11 @@
-const Card = require('../models/card')
+const Card = require('../models/card');
 const NotFound = require('../errors/NotFound(404)');
 const Forbidden = require('../errors/Forbidden(403)');
 const BadRequest = require('../errors/BadRequest(400)');
 
 module.exports.getCard = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.status(200).send(cards))
+    .then((cards) => res.send(cards))
     .catch(next);
 };
 
@@ -28,6 +28,7 @@ module.exports.deleteCard = (req, res,next) => {
       if (!card) {
       throw new NotFound('Карточка по id не найдена');
       }
+    const { owner: cardOwnerId } = card;
      if (cardOwnerId.valueOf() !== req.user._id) {
       throw new Forbidden('Ошибка прав доступа');
       }
