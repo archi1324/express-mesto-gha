@@ -32,7 +32,7 @@ module.exports.createUser = (req, res, next) => {
       } if (err.name === 'ValidationError') {
         return next(new BadRequest('Данные переданы неверно'));
       }
-      next(err);
+      return next(err);
     });
 };
 
