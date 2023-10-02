@@ -57,7 +57,6 @@ module.exports.likeCard = (req, res, next) => {
         next(err);
       }
     })
-    .catch(next);
 };
 
 module.exports.deleteLike = (req, res, next) => {
