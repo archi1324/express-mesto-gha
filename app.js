@@ -35,9 +35,7 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use('*', (req, res, next) => {
-  return next(new NotFound('Маршрут не найден'));
-});
+app.use('*', (req, res, next) => { return next(new NotFound('Маршрут не найден')); });
 
 app.use(errors());
 app.use((err, req, res, next) => {
@@ -48,6 +46,6 @@ app.use((err, req, res, next) => {
       : message,
   })
   next();
-});
+});;
 
 app.listen(PORT);
