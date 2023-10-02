@@ -79,16 +79,16 @@ module.exports.changeUserInfo = (req, res, next) => {
 };
 
 module.exports.changeAvatar = (req, res, next) => {
-  User.findByIdAndUpdate(req.user._id, req.body , { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
     .then((user) => {
-        if (!user) {
+      if (!user) {
         throw new NotFound('Пользователь с указанным _id не найден');
-        }
-    res.send(user);
+      }
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-      next(new BadRequest('Данные переданы неверно'));
+        next(new BadRequest('Данные переданы неверно'));
       } else {
         next(err);
       }
