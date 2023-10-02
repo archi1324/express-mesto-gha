@@ -14,7 +14,7 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.createUser = (req, res, next) => {
   const {
-    email, password, name, about, avatar
+    email, password, name, about, avatar,
   } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
@@ -31,7 +31,8 @@ module.exports.createUser = (req, res, next) => {
         return next(new Conflict('Пользователь уже зарегистрирован'));
       } if (err.name === 'ValidationError') {
         return next(new BadRequest('Данные переданы неверно'));
-      } else {
+      }
+      {
         next(err);
       }
     });
@@ -80,18 +81,18 @@ module.exports.changeUserInfo = (req, res, next) => {
 module.exports.changeAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body , { new: true, runValidators: true })
     .then((user) => {
-      if (!user) {
-      throw new NotFound('Пользователь с указанным _id не найден');
-      }
+        if (!user) {
+        throw new NotFound('Пользователь с указанным _id не найден');
+        }
     res.send(user);
-  })
-  .catch((err) => {
-    if (err.name === 'ValidationError') {
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
       next(new BadRequest('Данные переданы неверно'));
-    } else {
-      next(err);
-    }
-  });
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.login = (req, res, next) => {
