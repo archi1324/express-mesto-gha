@@ -27,10 +27,10 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById({ _id: req.params.cardId })
     .then((card) => {
       if (!card) {
-        throw new NotFound('Карточка по id не найдена');
+        next (new NotFound('Карточка по id не найдена'));
       }
       if (card.owner._id.valueOf() !== req.user._id) {
-        throw new Forbidden('Ошибка прав доступа');
+        next (new Forbidden('Ошибка прав доступа'));
       }
       return Card.deleteOne(card)
         .then(() => res.send(card));
@@ -46,13 +46,13 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFound('Карточка с указанным _id не найдена');
+        next(new NotFound('Карточка с указанным _id не найдена'));
       }
       res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequest('Данные переданы неверно');
+        next (new BadRequest('Данные переданы неверно'));
       } else {
         next(err);
       }
@@ -69,7 +69,7 @@ module.exports.deleteLike = (req, res, next) => {
     )
     .then((card) => {
       if (!card) {
-        throw new NotFound('Карточка с указанным _id не найдена');
+        next (new NotFound('Карточка с указанным _id не найдена'));
       }
       res.send(card);
     })
@@ -80,5 +80,4 @@ module.exports.deleteLike = (req, res, next) => {
         next(err);
       }
     })
-    .catch(next);
 };

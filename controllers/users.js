@@ -97,15 +97,15 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
-      if (user) {
+      if (!user) {
+        throw new Unauthorized('Неправильные почта или пароль');
+      }
         const token = jwt.sign(
           { _id: user._id },
           'supersecret-key-for-signing',
           { expiresIn: '7d' },
         );
         return res.send({ token });
-      }
-      throw new Unauthorized('Неправильные почта или пароль');
-    })
+      })
     .catch(next);
 };
