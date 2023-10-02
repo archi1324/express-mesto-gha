@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-const {celebrate, Joi, errors } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const NotFound = require('./errors/NotFound(404)');
@@ -35,12 +35,13 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use('*', (req, res, next) => {return next(new NotFound('Маршрут не найден'))});
+app.use('*', (req, res, next) => {
+  return next(new NotFound('Маршрут не найден'));
+});
 
 app.use(errors());
 app.use((err, req, res, next) => {
   const { status = 500, message } = err;
-
   res.status(status).send({
       message: status === 500
         ? 'На сервере произошла ошибка'
@@ -50,5 +51,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
+  сonsole.log(`App listening on port ${PORT}`);
 });

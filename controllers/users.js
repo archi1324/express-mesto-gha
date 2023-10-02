@@ -98,13 +98,13 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
-      if ({ _id: user._id }) {
+      if (user) {
         const token = jwt.sign(
           { _id: user._id },
           'supersecret-key-for-signing',
           { expiresIn: '7d' },
         );
-        return res.send({ _id: token });
+        return res.send({ token });
       }
       throw new Unauthorized('Неправильные почта или пароль');
     })

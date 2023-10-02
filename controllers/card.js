@@ -16,10 +16,11 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequest('Не получается создать карточку');
+        next(new BadRequest('Не получается создать карточку'));
+      } else{
+        next(err);
       }
     })
-    .catch(next);
 };
 
 module.exports.deleteCard = (req, res,next) => {
