@@ -100,12 +100,12 @@ module.exports.login = (req, res, next) => {
       if (!user) {
         throw new Unauthorized('Неправильные почта или пароль');
       }
-        const token = jwt.sign(
-          { _id: user._id },
-          'supersecret-key-for-signing',
-          { expiresIn: '7d' },
-        );
-        return res.send({ token });
-      })
+      const token = jwt.sign(
+        { _id: user._id },
+        'supersecret-key-for-signing',
+        { expiresIn: '7d' },
+      );
+      return res.send({ token });
+    })
     .catch(next);
 };
