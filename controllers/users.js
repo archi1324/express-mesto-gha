@@ -6,7 +6,6 @@ const Conflict = require('../errors/Conflict(409)');
 const NotFound = require('../errors/NotFound(404)');
 const Unauthorized = require('../errors/Unauthorized(401)');
 
-
 module.exports.getUsers = (req, res,next) => {
   User.find({})
     .then((users) => res.status(200).send({users}))

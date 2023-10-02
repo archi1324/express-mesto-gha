@@ -1,4 +1,4 @@
-const Card = require('../models/card')
+const Card = require('../models/card');
 const NotFound = require('../errors/NotFound(404)');
 const Forbidden = require('../errors/Forbidden(403)');
 const BadRequest = require('../errors/BadRequest(400)');
@@ -17,33 +17,33 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Не получается создать карточку'));
-      } else{
+      } else {
         next(err);
       }
-    })
+    });
 };
 
-module.exports.deleteCard = (req, res,next) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findById({ _id: req.params.cardId })
     .then((card) => {
       if (!card) {
-      throw new NotFound('Карточка по id не найдена');
+        throw new NotFound('Карточка по id не найдена');
       }
-     if (card.owner._id.valueOf() !== req.user._id) {
-      throw new Forbidden('Ошибка прав доступа');
+      if (card.owner._id.valueOf() !== req.user._id) {
+        throw new Forbidden('Ошибка прав доступа');
       }
       return Card.deleteOne(card)
-      .then(() => res.send(card));
+        .then(() => res.send(card));
     })
     .catch(next);
-    }
+};
 
 module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
-      req.params.cardId,
-      { $addToSet: { likes: req.user._id } },
-      { new: true },
-    )
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
     .then((card) => {
       if (!card) {
         throw new NotFound('Карточка с указанным _id не найдена');
